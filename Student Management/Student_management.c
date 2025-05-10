@@ -10,28 +10,28 @@ struct Student {
     float marks;
 };
 
-// Function to save students to a file
+// Function to save students to a binary file
 void saveToFile(struct Student students[], int count) {
-    FILE *file = fopen("students.dat", "wb");
+    FILE *file = fopen("students.dat", "wb");  // Open file for writing binary
     if (file == NULL) {
         printf("Error opening file for saving!\n");
         return;
     }
-    fwrite(&count, sizeof(int), 1, file); // Save the count of students
-    fwrite(students, sizeof(struct Student), count, file); // Save the student array
+    fwrite(&count, sizeof(int), 1, file);  // Save count first
+    fwrite(students, sizeof(struct Student), count, file);  // Save student array
     fclose(file);
     printf("Data saved successfully!\n");
 }
 
-// Function to load students from a file
+// Function to load students from the binary file
 void loadFromFile(struct Student students[], int *count) {
-    FILE *file = fopen("students.dat", "rb");
+    FILE *file = fopen("students.dat", "rb");  // Open file for reading binary
     if (file == NULL) {
         printf("No existing data found. Starting fresh.\n");
         return;
     }
-    fread(count, sizeof(int), 1, file); // Load the count of students
-    fread(students, sizeof(struct Student), *count, file); // Load the student array
+    fread(count, sizeof(int), 1, file);  // Read count of students
+    fread(students, sizeof(struct Student), *count, file);  // Read student array
     fclose(file);
     printf("Data loaded successfully!\n");
 }
@@ -43,15 +43,20 @@ void addStudent(struct Student students[], int *count) {
         return;
     }
 
+    // Take student input
     printf("Enter Roll Number: ");
     scanf("%d", &students[*count].rollNo);
     printf("Enter Name: ");
-    scanf(" %[^\n]", students[*count].name); // To read string with spaces
+    scanf(" %[^\n]", students[*count].name);  // Read name with spaces
     printf("Enter Marks: ");
     scanf("%f", &students[*count].marks);
 
-    (*count)++;
-    printf("Student added successfully!\n");
+    (*count)++;  // Increase the count after adding student
+
+    // Save data after adding student
+    saveToFile(students, *count);
+
+    printf("Student added and saved successfully!\n");
 }
 
 // Function to display all students
@@ -87,23 +92,26 @@ void searchStudent(struct Student students[], int count) {
     printf("Student with Roll No %d not found!\n", rollNo);
 }
 
+// Main function
 int main() {
-    struct Student students[MAX_STUDENTS];
-    int count = 0;
+    struct Student students[MAX_STUDENTS];  // Array to store students
+    int count = 0;  // Total student count
     int choice;
 
-    // Load data from file at the start
+    // Load data from file when program starts
     loadFromFile(students, &count);
 
     while (1) {
+        // Menu
         printf("\nStudent Management System\n");
         printf("1. Add Student\n");
         printf("2. Display Students\n");
         printf("3. Search Student\n");
-        printf("4. Save and Exit\n");
+        printf("4. Exit\n");
         printf("Enter your choice: ");
         scanf("%d", &choice);
 
+        // Handle user choice
         switch (choice) {
             case 1:
                 addStudent(students, &count);
@@ -115,8 +123,7 @@ int main() {
                 searchStudent(students, count);
                 break;
             case 4:
-                saveToFile(students, count);
-                printf("Exiting...\n");
+                printf("Exiting program...\n");
                 return 0;
             default:
                 printf("Invalid choice! Please try again.\n");
