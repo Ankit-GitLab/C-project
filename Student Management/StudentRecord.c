@@ -10,6 +10,32 @@ struct Student {
     float marks;
 };
 
+// Function to save students to a file
+void saveToFile(struct Student students[], int count) {
+    FILE *file = fopen("students.dat", "wb");
+    if (file == NULL) {
+        printf("Error opening file for saving!\n");
+        return;
+    }
+    fwrite(&count, sizeof(int), 1, file); // Save the count of students
+    fwrite(students, sizeof(struct Student), count, file); // Save the student array
+    fclose(file);
+    printf("Data saved successfully!\n");
+}
+
+// Function to load students from a file
+void loadFromFile(struct Student students[], int *count) {
+    FILE *file = fopen("students.dat", "rb");
+    if (file == NULL) {
+        printf("No existing data found. Starting fresh.\n");
+        return;
+    }
+    fread(count, sizeof(int), 1, file); // Load the count of students
+    fread(students, sizeof(struct Student), *count, file); // Load the student array
+    fclose(file);
+    printf("Data loaded successfully!\n");
+}
+
 // Function to add a student
 void addStudent(struct Student students[], int *count) {
     if (*count >= MAX_STUDENTS) {
@@ -66,12 +92,15 @@ int main() {
     int count = 0;
     int choice;
 
+    // Load data from file at the start
+    loadFromFile(students, &count);
+
     while (1) {
         printf("\nStudent Management System\n");
         printf("1. Add Student\n");
         printf("2. Display Students\n");
         printf("3. Search Student\n");
-        printf("4. Exit\n");
+        printf("4. Save and Exit\n");
         printf("Enter your choice: ");
         scanf("%d", &choice);
 
@@ -86,6 +115,7 @@ int main() {
                 searchStudent(students, count);
                 break;
             case 4:
+                saveToFile(students, count);
                 printf("Exiting...\n");
                 return 0;
             default:
