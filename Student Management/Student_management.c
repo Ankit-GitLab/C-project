@@ -12,27 +12,27 @@ struct Student {
 
 // Function to save students to a binary file
 void saveToFile(struct Student students[], int count) {
-    FILE *file = fopen("students.dat", "wb");  // Open file for writing in binary mode
+    FILE *file = fopen("students.dat", "wb");  // Open file for writing binary
     if (file == NULL) {
         printf("Error opening file for saving!\n");
         return;
     }
-    fwrite(&count, sizeof(int), 1, file);  // Write the number of students
-    fwrite(students, sizeof(struct Student), count, file);  // Write all student records
-    fclose(file);  // Close the file
+    fwrite(&count, sizeof(int), 1, file);  // Save count first
+    fwrite(students, sizeof(struct Student), count, file);  // Save student array
+    fclose(file);
     printf("Data saved successfully!\n");
 }
 
 // Function to load students from the binary file
 void loadFromFile(struct Student students[], int *count) {
-    FILE *file = fopen("students.dat", "rb");  // Open file for reading in binary mode
+    FILE *file = fopen("students.dat", "rb");  // Open file for reading binary
     if (file == NULL) {
         printf("No existing data found. Starting fresh.\n");
         return;
     }
-    fread(count, sizeof(int), 1, file);  // Read the number of students
-    fread(students, sizeof(struct Student), *count, file);  // Read all student records
-    fclose(file);  // Close the file
+    fread(count, sizeof(int), 1, file);  // Read count of students
+    fread(students, sizeof(struct Student), *count, file);  // Read student array
+    fclose(file);
     printf("Data loaded successfully!\n");
 }
 
@@ -43,36 +43,17 @@ void addStudent(struct Student students[], int *count) {
         return;
     }
 
-    char temp[20];  // Temporary string to store roll number as string
-
-    // Take input for roll number as string to validate
+    // Take student input
     printf("Enter Roll Number: ");
-    scanf("%s", temp);  // Read as string
-    if (sscanf(temp, "%d", &students[*count].rollNo) != 1) {
-        printf("Invalid roll number! Please enter numeric value.\n");
-        while (getchar() != '\n');  // Clear input buffer
-        return;
-    }
-
-    // Clear input buffer before reading name
-    while (getchar() != '\n');
-
-    // Read name including spaces
+    scanf("%d", &students[*count].rollNo);
     printf("Enter Name: ");
-    fgets(students[*count].name, sizeof(students[*count].name), stdin);
-    students[*count].name[strcspn(students[*count].name, "\n")] = '\0'; // Remove newline
-
-    // Read marks
+    scanf(" %[^\n]", students[*count].name);  // Read name with spaces
     printf("Enter Marks: ");
-    if (scanf("%f", &students[*count].marks) != 1) {
-        printf("Invalid marks input!\n");
-        while (getchar() != '\n');  // Clear buffer
-        return;
-    }
+    scanf("%f", &students[*count].marks);
 
-    (*count)++;  // Increase count
+    (*count)++;  // Increase the count after adding student
 
-    // Save student data
+    // Save data after adding student
     saveToFile(students, *count);
 
     printf("Student added and saved successfully!\n");
@@ -113,15 +94,15 @@ void searchStudent(struct Student students[], int count) {
 
 // Main function
 int main() {
-    struct Student students[MAX_STUDENTS];  // Array to store student records
-    int count = 0;  // Number of students
+    struct Student students[MAX_STUDENTS];  // Array to store students
+    int count = 0;  // Total student count
     int choice;
 
-    // Load students from file at startup
+    // Load data from file when program starts
     loadFromFile(students, &count);
 
     while (1) {
-        // Display menu
+        // Menu
         printf("\nStudent Management System\n");
         printf("1. Add Student\n");
         printf("2. Display Students\n");
@@ -130,7 +111,7 @@ int main() {
         printf("Enter your choice: ");
         scanf("%d", &choice);
 
-        // Process choice
+        // Handle user choice
         switch (choice) {
             case 1:
                 addStudent(students, &count);

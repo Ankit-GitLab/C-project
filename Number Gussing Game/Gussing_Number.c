@@ -9,7 +9,7 @@ int main() {
     srand(time(0));
 
     // Ask user for input
-    printf("Welcome to the world of OTP Generate...\n");
+    printf("Welcome to the world of Guessing Numbers...\n");
 
     // Input the minimum value
     printf("Enter First Number: ");
@@ -23,7 +23,7 @@ int main() {
     randomValue = (rand() % (max - min + 1)) + min;
 
     // Output the result
-    printf("Random OTP between %d to %d: %d\n\n", min, max, randomValue);
+    printf("Random value between %d to %d: %d\n\n", min, max, randomValue);
 
     printf("\n Thanks for Playing.");
 
